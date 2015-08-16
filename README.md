@@ -3,6 +3,12 @@
 
 This provides Dia AWS Simple Icons shapes.
 
+## System Requirements
+
+- dia
+- ImageMagick (`convert` command)
+- ruby (`rexml/document`, it is included in the standard Ruby distribution.)
+
 ## Usage
 
 
