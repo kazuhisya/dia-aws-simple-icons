@@ -1,5 +1,7 @@
 # AWS Simple Icons for dia
 
+[![Circle CI](https://circleci.com/gh/kazuhisya/dia-aws-simple-icons/tree/master.svg?style=shield)](https://circleci.com/gh/kazuhisya/dia-aws-simple-icons/tree/master)
+
 
 This provides Dia AWS Simple Icons shapes.
 
