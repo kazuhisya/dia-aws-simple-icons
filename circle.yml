@@ -1,0 +1,17 @@
+machine:
+    pre:
+        - echo 'DOCKER_OPTS="-s btrfs -e lxc -D --userland-proxy=false"' | sudo tee -a /etc/default/docker
+        - sudo curl -L -o /usr/bin/docker 'https://s3-external-1.amazonaws.com/circle-downloads/docker-1.9.0-circleci-cp-workaround'
+        - sudo chmod 0755 /usr/bin/docker
+    services:
+        - docker
+    dependencies:
+        override:
+            - docker info
+            - docker build -t kazuhisya/dia-aws-simple-icons -f Dockerfile .
+
+        test:
+            override:
+                - docker run -ti kazuhisya/dia-aws-simple-icons /bin/true
+            post:
+                - docker cp $(docker ps -lq):/dia-aws-simple-icons/dist $CIRCLE_ARTIFACTS
