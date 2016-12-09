@@ -1,14 +1,25 @@
 #!/usr/bin/env bash
 
+# Set Version
+ICONS_VERSION="16.2.22"
+BASE_DIRNAME="AWS_Simple_Icons_EPS-SVG_v${ICONS_VERSION}"
+
 echo "----------------------------------------------------------------------"
 
-curl -OL http://media.amazonwebservices.com/architecturecenter/icons/AWS_Simple_Icons_svg_eps.zip
-unzip AWS_Simple_Icons_svg_eps.zip
+echo "Get Original File"
+
+if [ -e ${BASE_DIRNAME}.zip ]; then
+    ls -la ./${BASE_DIRNAME}.zip
+else
+   curl -OL https://media.amazonwebservices.com/AWS-Design/Arch-Center/${ICONS_VERSION}_Update/${BASE_DIRNAME}.zip
+fi
+
+unzip ${BASE_DIRNAME}
 
 echo "----------------------------------------------------------------------"
 
 (
-cd AWS_Simple_Icons_svg_eps
+cd ${BASE_DIRNAME}
 IFS=$'\n';
 # delete space
 echo "delete space: dir"
@@ -25,48 +36,21 @@ for file in `find ./ -maxdepth 1 -type d` ; do
         mv "$file" "${file/\&/and}";
     fi
 done
-
-echo "----------------------------------------------------------------------"
-
-# delete space
-echo "delete space: file"
-for file in `find ./* -type f` ; do
-    if [ $(echo $file | grep -e ' ') ]; then
-        mv "$file" `echo $file | tr ' ' '_'`;
-    fi
-done
-
-# delete "&"
-echo "delete \"&\": file"
-for file in `find ./* -type f` ; do
-    if [ $(echo $file | grep -e '&') ]; then
-        mv "$file" "${file/\&/and}";
-    fi
-done
-
-# delete "_copy"
-echo "delete \"_copy\": file"
-
-for file in `find ./* -type f` ; do
-    if [ $(echo $file | grep -e 'copy') ]; then
-        mv $file "${file/copy_/}"
-    fi
-done
 )
 
 echo "----------------------------------------------------------------------"
 
 # Clean Up FileName
-cd AWS_Simple_Icons_svg_eps
+cd ${BASE_DIRNAME}
 echo "Clean Up FileName"
 for dirname in `find ./ -maxdepth 1 -type d ! -name "." |gawk -F/ '{print $NF}'` ; do
-    for filename in `ls ./$dirname/SVG/` ; do
+    for filename in `ls ./$dirname/` ; do
         if [ $(echo $filename | grep -e "$dirname") ]; then
             echo "[OK] $filename to AWS_Simple_Icons_${filename}"
-            mv ./$dirname/SVG/$filename ./$dirname/SVG/AWS_Simple_Icons_${filename}
+            mv ./$dirname/$filename ./$dirname/AWS_Simple_Icons_${filename}
         else
             echo "[Move] $filename to AWS_Simple_Icons_${dirname}_${filename}"
-            mv ./$dirname/SVG/$filename ./$dirname/SVG/AWS_Simple_Icons_${dirname}_${filename}
+            mv ./$dirname/$filename ./$dirname/AWS_Simple_Icons_${dirname}_${filename}
         fi
     done
 done
@@ -74,7 +58,7 @@ done
 
 cd ..
 mkdir -p ./svg_org ./svg
-cp ./AWS_Simple_Icons_svg_eps/*/SVG/*.svg ./svg_org
+cp ./${BASE_DIRNAME}/*/*.svg ./svg_org
 
 echo "----------------------------------------------------------------------"
 
@@ -100,3 +84,4 @@ echo "Copy .output in your env"
 echo "ex:"
 echo "    $ cat ./.outputs/shapes.sheet  > ~/.dia/sheets/AWS.sheet"
 echo "    $ cp -rf ./.outputs/shapes/* ~/.dia/shapes/"
+
