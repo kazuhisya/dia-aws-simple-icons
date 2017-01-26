@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Set Version
-ICONS_VERSION="16.2.22"
+ICONS_VERSION="17.1.19"
 BASE_DIRNAME="AWS_Simple_Icons_EPS-SVG_v${ICONS_VERSION}"
 
 echo "----------------------------------------------------------------------"
