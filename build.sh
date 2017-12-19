@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash 
 
 # Set Version
 ICONS_VERSION="17.1.19"
@@ -23,53 +23,48 @@ cd ${BASE_DIRNAME}
 IFS=$'\n';
 # delete space
 echo "delete space: dir"
-for file in `find ./ -maxdepth 1 -type d` ; do
-    if [ $(echo $file | grep -e ' ') ]; then
-        mv "$file" `echo $file | tr ' ' '_'`;
-    fi
+for file in *" "*/ ; do
+    mv "$file" "${file// /_}";
 done
 
 # delete "&"
 echo "delete \"&\": dir"
-for file in `find ./ -maxdepth 1 -type d` ; do
-    if [ $(echo $file | grep -e '&') ]; then
-        mv "$file" "${file/\&/and}";
-    fi
+for file in *'&'*/ ; do
+    mv "$file" "${file//\&/and}";
 done
 )
 
 echo "----------------------------------------------------------------------"
-
+ 
 # Clean Up FileName
 cd ${BASE_DIRNAME}
 echo "Clean Up FileName"
-for dirname in `find ./ -maxdepth 1 -type d ! -name "." |gawk -F/ '{print $NF}'` ; do
-    for filename in `ls ./$dirname/` ; do
-        if [ $(echo $filename | grep -e "$dirname") ]; then
-            echo "[OK] $filename to AWS_Simple_Icons_${filename}"
-            mv ./$dirname/$filename ./$dirname/AWS_Simple_Icons_${filename}
-        else
-            echo "[Move] $filename to AWS_Simple_Icons_${dirname}_${filename}"
-            mv ./$dirname/$filename ./$dirname/AWS_Simple_Icons_${dirname}_${filename}
-        fi
-    done
+for dir in */ ; do
+  for file in "$dir"/* ; do
+    if [[ "$file" =~ "$dir" ]]; then
+      echo "[OK] $file to AWS_Simple_Icons_${file}"
+      mv "$file" "${dir}/AWS_Simple_Icons_${file##*/}"
+    else
+      echo "[Move] $file to AWS_Simple_Icons_${dir%/}_${file##*/}"
+      mv "$file" "${dir}/AWS_Simple_Icons_${dir%/}_${file##*/}"
+    fi
+  done
 done
-
 
 cd ..
 mkdir -p ./svg_org ./svg
-cp ./${BASE_DIRNAME}/*/*.svg ./svg_org
+cp ./${BASE_DIRNAME}/*/*.svg ./svg_org/
 
 echo "----------------------------------------------------------------------"
 
 echo "check xml"
-for file in `ls svg_org` ; do
-  if [ "$(cat svg_org/$file |grep -e 'nyt_x5F_exporter_x5F_info' svg_org/${file})" ]; then
-    ruby convert.rb svg_org/${file} > svg/${file}
+for file in svg_org/* ; do
+  if grep -qe 'nyt_x5F_exporter_x5F_info' ${file}; then
+    ruby convert.rb ${file} > ${file/svg_org/svg}
     echo "OK: ${file}"
   else
     echo "NG, Repair: ${file}"
-    cat svg_org/${file} > svg/${file}
+    cp ${file} ${file/svg_org/svg}
   fi
 done
 
